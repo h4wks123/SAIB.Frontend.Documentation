@@ -584,6 +584,554 @@ Below is an image which shows how every positioned element creates its own stack
 
 #pagebreak()
 
+= Javascript
+
+\
+== Overview
+Javascript is a versatile, prototype-based programming language that supports multiple paradigms, including object-oriented, imperative, declarative, and functional programming. It operates as a single-threaded, dynamic language, making it an essential tool for modern web development. 
+A solid understanding of JavaScript is crucial for developers to grasp how it works under the hood, enabling them to write efficient and effective code. In this section, I will explore key concepts that are vital for understanding it as a language. For an in-depth overview of the language, developers can refer to this #link("https://developer.mozilla.org/en-US/docs/Web/JavaScript")[documentation].
+
+\
+== Prerequisites
+Before proceeding with this activity, it's essential to have a solid understanding of the fundamental properties of HTML and CSS.
+
+\
+== DOM Manipulation
+Before diving into DOM manipulation, it's crucial to understand what the Document Object Model (DOM) actually represents. Every document loaded in the browser is structured as a DOM tree, which is a hierarchical representation of the HTML document. The browser creates this structure, allowing programming languages—such as JavaScript—to access, modify, and interact with HTML elements dynamically. The DOM is also used by the browser itself to apply CSS styles, attributes, and other information to the correct elements when rendering a page. Once a page is loaded, developers can manipulate the DOM with JavaScript to create interactive experiences. In reference to this, an example is provided below:
+
+
+```html
+<html lang="en-US">
+  <head>
+    <title>SAIB</title>
+  </head>
+  <body>
+    <h1>Cardano</h1>
+  </body>
+</html>
+```
+
+\
+The DOM tree structure for the above HTML document looks like this:
+
+#figure(
+  image("images/DOMStructure.png", height: 200pt),
+    caption: [
+      DOM interpretation of the HTML code
+    ],
+  )
+
+\
+Each entry in this tree is called a node, and some nodes represent HTML elements such as: ```html <html>, <head>, <meta>, <title>, <body>```. Additionally, the ```cs #text``` nodes represent the actual content inside the elements, such as text within ```html <title>``` or ```html <h1>```.
+
+\
+In the context of DOM manipulation, we interact with these nodes programmatically to modify the structure, style, or content of a webpage. Below, we will demonstrate how to change the styling of an element in the DOM and perform an operation such as deleting a button using JavaScript. For this part we will use the #link("https://saib.dev/")[SAIB] navigation bar as an example. Initially, the navigation bar contains a button, and we will manipulate the DOM to change its style and later remove it entirely. Below is a visual representation of the SAIB navigation bar before any DOM manipulation. 
+#figure(
+  image("images/saibNavBar.png"),
+    caption: [
+      Navigation bar of SAIB website
+    ],
+  )
+
+\
+To begin, we access the Developer Tools in the browser by pressing F12 or right-clicking and selecting "Inspect", which gives us the ability to interact with the DOM through the Console tab. This allows us to execute JavaScript that manipulates the page dynamically:
+#figure(
+  image("images/saibDevTools.png"),
+    caption: [
+      SAIB developer tools
+    ],
+  )
+
+\
+The code above achieves the following:
+
+- ```js let button = document.querySelector(".MuiButtonBase-root"):``` This method selects the first <button> element in the DOM.
+- ```js button.style.color = 'black':``` Modifies the text color of the button to black.
+- ```js button.style.backgroundColor = 'red': ```Changes the button’s background color to red.
+
+\
+This JavaScript code is executed directly in the browser’s Console section, affecting the appearance of the button on the page. After running the code, the appearance of the button will update as shown in the following image:
+
+#figure(
+  image("images/saibColoredNavBar.png"),
+    caption: [
+      Navigation bar of SAIB website after DOM manipulation
+    ],
+  )
+\
+
+Additionally, if we wish to remove the button entirely, we can use the following command: ```js button.remove()```. This command targets the selected button element and removes it from the DOM, making it disappear from the rendered page.
+
+#figure(
+  image("images/saibNavBarNoButton.png"),
+    caption: [
+      Navigation bar of SAIB website after deleting button
+    ],
+  )
+\
+  
+== Synchronous Programming
+This refers to a sequential execution model where the program processes one task at a time, step by step. Each task must be completed before moving on to the next, meaning the program waits for the current operation to finish before executing the next line of code. This approach is straightforward and predictable but can be inefficient if a task takes a long time to complete, as it blocks the program's progress. 
+```js 
+console.log("Task 1: Start");
+console.log("Task 2: Processing...");
+console.log("Task 3: Done");
+```
+
+\
+Based on the given example, each statement is executed one after the other, and no line proceeds until the current one completes. While this model is simple, it can lead to performance bottlenecks if a time-intensive task is executed synchronously which leads us to our next topic.
+
+\
+== Asynchronous Programming
+As discussed in the previous section, one of the major drawbacks of synchronous programming is how it handles time-intensive tasks. Such tasks can block the execution of the entire program. Consider the example below:
+```js
+console.log("Task 1: Start Math Calculation");
+
+// Simulating a time-intensive task (calculating the sum of large numbers)
+function calculateSum() {
+  let sum = 0;
+  for (let i = 0; i < 1000000000; i++) {
+    sum += i;
+  }
+  return sum;
+}
+
+calculateSum();
+console.log("Task 2: Calculation Complete");
+console.log("Task 3: User Can Proceed");
+```
+
+#pagebreak()
+In this example, the ```js calculateSum``` function simulates a time-intensive calculation by summing a large range of numbers. The entire program is blocked while the calculation is running, which means the user can't interact with the site during this time. To avoid blocking the UI, we can process the calculation asynchronously, allowing the application to remain responsive while performing the task:
+```js  
+console.log("Task 1: Start Math Calculation");
+
+// Simulating an asynchronous calculation using setTimeout
+setTimeout(() => {
+  let sum = 0;
+  for (let i = 0; i < 1000000000; i++) {
+    sum += i;
+  }
+  console.log("Task 2: Calculation Complete");
+}, 0);
+
+console.log("Task 3: User Can Proceed");
+```
+
+\
+In this case, setTimeout allows the calculation to happen in the background. The application doesn't get blocked. Task 3 is logged immediately after Task 1, while the calculation continues in the background. Once the calculation is done, Task 2 is logged. This demonstrates how asynchronous programming can enhance the user experience by preventing the application from becoming unresponsive during time-intensive tasks like large mathematical calculations.
+
+\
+== Promises
+They are used to handle asynchronous operations in JavaScript. A promise represents a task that will eventually complete (either successfully or with an error). It allows you to work with asynchronous operations like data fetching, timers, or calculations without blocking the rest of the program. Here's a basic example using a promise to simulate an asynchronous task:
+
+#pagebreak()
+```js
+function delay(seconds) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(`Task completed after ${seconds} seconds`);
+    }, seconds * 1000);
+  });
+}
+
+delay(3)
+  .then((message) => {
+    console.log(message);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+
+console.log("Task started...");
+```
+
+\
+In this example, the delay function returns a promise that resolves after a 3-second delay. This simulates an asynchronous task where the program doesn't block and allows other code to run while waiting for the delay to complete.
+- #text(weight: "bold",[delay(seconds):]) This function returns a promise that simulates a delay by using ```js setTimeout```. After the specified number of seconds, it resolves with a message.
+- #text(weight: "bold",[delay(3):]) This simulates a 3-second delay before the promise resolves.
+- #text(weight: "bold",[.then():]) The ```js .then()``` method is used to handle the result (message) once the promise is resolved.
+- #text(weight: "bold",[.catch():]) This is used to catch any potential errors in the program.
+
+\
+Eventually, this program executes the output:
+```js
+Task started...
+Task completed after 3 seconds
+```
+
+#pagebreak()
+== Async and Await
+The ```js async``` keyword is used to declare a function that returns a promise. This indicates that the function is asynchronous, and it enables the use of the ```js await``` keyword inside that function to wait for a promise to resolve before proceeding with the rest of the program. This is demonstrated based on the given example below:
+```js
+async function fetchData(){
+  // Function for fetching data
+}
+```
+
+\
+The ```js await``` keyword is used to wait for a promise to resolve or reject within an ```js async``` function. When ```js await``` is used, it pauses the execution of the function until the promise is resolved or rejected which can be demonstrated in the following code:
+```js
+async function fetchData(){
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/posts",
+    );
+}
+```
+
+\
+The ```js await``` keyword waits for the ```js fetch()``` promise to resolve. The ```js fetch()``` function is used to retrieve data from the given URL. The result (a response object) is stored in the response variable once the promise is fulfilled.
+
+\
+Users can also handle the data returned from the promise by checking if the response is ```js OK (status code 200-299)```. If the response is not successful, the error can be handled appropriately.
+#pagebreak()
+```js 
+async function fetchData() {
+  const response = await fetch(
+    "https://jsonplaceholder.typicode.com/posts",
+  );
+
+  if (!response.ok) {
+    console.log(`HTTP error ${response.status}`);
+  } else {
+    const data = await response.json();
+    console.log(data);
+  }
+}
+```
+
+\
+After fetching the data, we check if the response is OK using response.ok. If it's not, we log an error message with the status code. Otherwise, we parse the response as JSON using ```js await response.json()``` and log the data.
+
+\
+To handle potential errors in asynchronous code, such as network issues or failed API requests, you can wrap your code in a ```js try...catch``` block. This ensures that if an error occurs at any point in the asynchronous code, the error is caught and handled gracefully.
+```js
+async function fetchData() {
+  try {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/posts",
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error(`Could not get data: ${error.message}`);
+  }
+}
+```
+
+The code inside the ```js try``` block will attempt to fetch the data and process the response. If an error occurs, whether it’s a network issue or a failed response, it will throw an error with a custom message. The ```js catch``` block will handle the error, logging a message that explains what went wrong.
+
+\
+With ```js async``` and ```js await```, working with asynchronous code becomes much more readable and manageable, especially when dealing with multiple asynchronous operations like fetching data from APIs.
+
+\
+== Event Loop
+Before diving into event loop, it's essential to understand how JavaScript operates as a single-threaded language and the significance of the call stack. JavaScript executes one operation at a time in a sequential manner. It processes code line by line, and each function call is added to the call stack, which follows a #link("https://www.geeksforgeeks.org/lifo-last-in-first-out-approach-in-programming/")[Last In, First Out (LIFO)] execution model. To visualize this concept, consider the following example:
+
+#table(
+  columns: (250pt, 1fr),
+  stroke: (x, y) => if y == 0 {
+    (bottom: 0.7pt + black)
+  },
+  table.header(
+    [#text(weight: "bold", [Call Stack])],
+  ),
+  [
+    \
+    ```js
+    function multiply(a, b) {
+      return a * b;
+    }
+
+    function square(n) {
+      return multiply(n, n);
+    }
+
+    function printSquare(n) {
+      var squared = square(n);
+      console.log("square is printed");
+    }
+    
+    printSquare(4);
+     ```
+  ], [
+    #figure(
+  image("images/JSCallStackSynchronous.png", height: 250pt),
+  )
+  ],
+)
+
+\
++ The ```js main``` function starts executing and is placed in the call stack.
++ The ```js printSquare(4)``` function is invoked and pushed onto the stack.
++ Inside ```js printSquare```, the ```js square(4)``` function is called and added to the stack.
++ Inside ```js square```, the ```js multiply(4, 4)``` function is called and pushed onto the stack.
++ ```js multiply(4, 4)``` executes, returning 16, and is removed from the stack.
++ ```js square(4)``` receives the result (16) and is then removed from the stack.
++ ```js printSquare(4)``` logs "square is printed" and is finally removed from the stack.
++ At this point, the call stack is empty, indicating that the program has completed execution.
+
+
+\
+Now that we understand the role of the call stack and how JavaScript processes function calls synchronously, the question arises:
+
+\
+  #box(image(
+    "images/lightbulb.svg",
+    height: 12pt,
+    width: 12pt,
+  ))  #text(style: "italic",[How does JavaScript handle asynchronous operations like API calls, timers, and event listeners without blocking the execution of other code?])
+
+\
+This is where event loops come into play. JavaScript has a runtime model based on an event loop, which is responsible for executing the code, collecting and processing events, and executing queued sub-tasks. For this part, I will be using a simple example to demonstrate how this works under the hood:
+
+\
+#table(
+  columns: (200pt, 1fr, 1fr),
+  stroke: (x, y) => if y == 0 {
+    (bottom: 0.7pt + black)
+  },
+  table.header(
+    [#text(weight: "bold", [Event Loop])],
+  ),
+  [
+    \
+    ```js
+    console.log("SAIB");
+
+    setTimeout(function cb() {
+      console.log("Cardano");
+    }, 5000);
+
+    console.log("ADA");
+     ```
+  ], [
+    #figure(
+  image("images/eventLoopFirstStack.png", height: auto),
+  )
+  ], [
+    #figure(
+  image("images/eventLoopFirstWebAPI.png", height: auto),
+  )
+  ],
+  [
+    ```js
+    //Output
+    SAIB
+    ```
+  ],
+  table.cell(colspan: 2)[
+        #figure(
+  image("images/eventLoopFirstQueue.png", height: auto)
+        )
+  ]
+)
+
+\
++ The ```js main``` function starts executing and is pushed in the call stack.
++ ```js console.log("SAIB")``` is pushed to the call stack and immediately prints ```js SAIB```, then it is removed from the stack.
+#table(
+  columns: (200pt, 1fr, 1fr),
+  stroke: (x, y) => if y == 0 {
+    (bottom: 0.7pt + black)
+  },
+  table.header(
+    [#text(weight: "bold", [Event Loops])],
+  ),
+  [
+    \
+    ```js
+    console.log("SAIB");
+
+    setTimeout(function cb() {
+      console.log("Cardano");
+    }, 5000);
+
+    console.log("ADA");
+     ```
+  ], [
+    #figure(
+  image("images/eventLoopSecondStack.png", height: auto),
+  )
+  ], [
+    #figure(
+  image("images/eventLoopSecondWebAPI.png", height: auto),
+  )
+  ],
+  [
+    ```js
+    //Output
+    SAIB
+    ```
+  ],
+  table.cell(colspan: 2)[
+        #figure(
+  image("images/eventLoopFirstQueue.png", height: auto)
+        )
+  ]
+)
+
++ The ```js setTimeout(cb, 5000)``` function is added to the call stack.
++ Since ```js setTimeout``` is a Web API function, it is handed over to the Web API environment, which starts the 5-second timer.
++ The ```js setTimeout``` function completes execution and is removed from the call stack.
+
+\
+#table(
+  columns: (200pt, 1fr, 1fr),
+  stroke: (x, y) => if y == 0 {
+    (bottom: 0.7pt + black)
+  },
+  table.header(
+    [#text(weight: "bold", [Event Loops])],
+  ),
+  [
+    \
+    ```js
+    console.log("SAIB");
+
+    setTimeout(function cb() {
+      console.log("Cardano");
+    }, 5000);
+
+    console.log("ADA");
+     ```
+  ], [
+    #figure(
+  image("images/eventLoopThirdStack.png", height: auto),
+  )
+  ], [
+    #figure(
+  image("images/eventLoopSecondWebAPI.png", height: auto),
+  )
+  ],
+  [
+    ```js
+    //Output
+    SAIB
+    ADA
+    ```
+  ],
+  table.cell(colspan: 2)[
+        #figure(
+  image("images/eventLoopFirstQueue.png", height: auto)
+        )
+  ]
+)
++ ```js console.log("ADA")``` is added to the call stack, immediately prints ```js ADA```, and is then removed.
++ After 5 seconds, the Web API moves the callback function (cb) to the Task Queue
++ The Task Queue follows #link("https://queue-it.com/queue-first-in-first-out/")[First In, First Out (FIFO)] where the first completed asynchronous task gets executed first.
+
+\
+#table(
+  columns: (200pt, 1fr, 1fr),
+  stroke: (x, y) => if y == 0 {
+    (bottom: 0.7pt + black)
+  },
+  table.header(
+    [#text(weight: "bold", [Event Loops])],
+  ),
+  [
+    \
+    ```js
+    console.log("SAIB");
+
+    setTimeout(function cb() {
+      console.log("Cardano");
+    }, 5000);
+
+    console.log("ADA");
+     ```
+  ], [
+    #figure(
+  image("images/eventLoopEmptyStack.png", height: auto),
+  )
+  ], [
+    #figure(
+  image("images/eventLoopEmptyWebAPI.png", height: auto),
+  )
+  ],
+  [
+    ```js
+    //Output
+    SAIB
+    ADA
+    ```
+  ],
+  table.cell(colspan: 2)[
+        #figure(
+  image("images/eventLoopSecondQueue.png", height: auto)
+        )
+  ]
+)
+
++ The event loop ensures non-blocking behavior, it only moves tasks from the queue when the call stack is empty.
++ The event loop continuously checks if the call stack is empty.
++ Once it confirms the call stack is empty, it moves the callback function from the task queue to the call stack.
+
+\
+#table(
+  columns: (200pt, 1fr, 1fr),
+  stroke: (x, y) => if y == 0 {
+    (bottom: 0.7pt + black)
+  },
+  table.header(
+    [#text(weight: "bold", [Event Loops])],
+  ),
+  [
+    \
+    ```js
+    console.log("SAIB");
+
+    setTimeout(function cb() {
+      console.log("Cardano");
+    }, 5000);
+
+    console.log("ADA");
+     ```
+  ], [
+    #figure(
+  image("images/eventLoopFourthStack.png", height: auto),
+  )
+  ], [
+    #figure(
+  image("images/eventLoopEmptyWebAPI.png", height: auto),
+  )
+  ],
+  [
+    ```js
+    //Output
+    SAIB
+    ADA
+    Cardano
+    ```
+  ],
+  table.cell(colspan: 2)[
+        #figure(
+  image("images/eventLoopFirstQueue.png", height: auto)
+        )
+  ]
+)
++ The function cb() executes and reads the ```js console.log("ADA")```
++ The text ```js Cardano``` becomes printed, and then is removed from the call stack.
+
+\
+== Mastering Fundamentals
+As SAIB developers, mastering the fundamentals of HTML, CSS, and JavaScript is crucial before diving into frontend frameworks like React or Blazor. These core technologies form the foundation of web development and enable you to troubleshoot, optimize, and understand how frameworks work under the hood. This section highlights a custom carousel created by Jonh Alexis using raw HTML, CSS, and JavaScript, demonstrating how these technologies work together to create interactive features. This carousel implementation can also be checked based on the #link("https://codepen.io/laplacexd/pen/MYgWzqZ")[codepen] provided. Understanding such implementations will help deepen your knowledge of web fundamentals and provide a strong base for learning frameworks effectively.
+
+#figure(
+  image("images/customCarousel.png"),
+    caption: [
+      Custom Carousel with raw HTML, CSS, and Javascript
+    ],
+  )
+
+#pagebreak()
+
 = Creating the AEGIS Website Without Flex and Grid
 
 \
@@ -622,6 +1170,7 @@ The float property can have one of the following values:
     ],
   )
 
+\
 In this layout, the float property is used to position the elements within the navigation bar. Below explains how the layout was properly implemented.  
 
 - #text(weight: "bold", [Logo:]) Floated to the left, it takes up a fixed width (10rem) and spans the full height of the navigation bar. 
@@ -631,6 +1180,29 @@ In this layout, the float property is used to position the elements within the n
 \
 Here is the codepen #link("https://codepen.io/h4wks123/pen/PwYaGOQ")[link] to check how this is being implemented using float. 
 
+\
+== Relevance of Calc Property
+For responsive design, the ```css calc()``` function in CSS provides enhanced control by allowing dynamic calculations for property values. This feature enables developers to create flexible layouts that adapt seamlessly to different screen sizes. Below is an illustration that demonstrates a practical use case of the ```css calc()``` function in responsive design with a #link("https://codepen.io/h4wks123/pen/NPKEvKP")[codepen] provided here.
+
+#pagebreak()
+
+\
+#figure(
+  image("images/saibResponsiveLightning.png", height: auto),
+    caption: [
+      SAIB Responsive Lightning
+    ],
+  )
+
+\
+- #text(weight: "bold",[SAIB Lightning:]) The number 2 represents the SAIB lightning, which can be extracted either as a background image or an SVG. The lightning is assumed to be wrapped in a container with ```css width: 1280px```, making it the visual center of the website.
+- #text(weight: "bold",[Lightning Responsive Extender:]) Number 1 extends from the leftmost edge of the website’s viewport to the starting point of the lightning. This is achieved using ```css calc(50% - 640px)```, where ```css 50%``` represents the horizontal center of the website (center of the viewport), and ```css 640px``` is half the width of the 1280px container. Subtracting ```css 640px``` from ```css 50%``` shifts the starting point of the extender to align with the left edge of the container, ensuring it ends precisely at the start of the SAIB lightning.
+
+\
+==  Custom Flex Implementation
+This section shows a creative use of inline-blocks which basically simulates the behavior of a flex element. Though it is not used in this website, its still worth noting how the creative use of display and position properties help create creative solutions. A #link("https://codepen.io/h4wks123/pen/LEPXjeM")[codepen] is provided here which effectively demonstrates this.
+
+\
 == First Section
 For the first section of the Aegis website, implementation is explained in detail through the #link("https://saibph.sharepoint.com/sites/SAIB/_layouts/15/stream.aspx?id=%2Fsites%2FSAIB%2FShared%20Documents%2FINTERNS%2FIvanne%2FSAIB%5FFIRST%5FBACKGROUND%5FDISCUSSION%2Emp4&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2E9630e05b%2Da7a4%2D411a%2D87ca%2Dd8534ed4bdf3")[linked video]. The video serves as a guide on creating the first section without using flexbox or grid, focusing instead on basic CSS fundamentals. While the video covers this section, the remaining parts of the website will be explained in the form of a documentation, with additional details and an explainer for each section. 
 
@@ -733,6 +1305,8 @@ For this section, although the implementation here differs significantly from th
 - #text(weight: "bold",[Background Section:]) Number 1 contains the Footer section along with the elements that define it. 
 - #text(weight: "bold",[Footer Containers:]) Numbers 2 and 3 serve as the footer container which holds the respective elements holding necessary texts on what defines this section. 
 - #text(weight: "bold",[Footer Information:]) Numbers 4 to 10 are the elements that represent the information found in the footer. Numbers 4 to 6 and 8 are positioned using ```css float: left``` and Numbers 7, 9, and 10 are positioned using ```css float: right```.
+
+\
 
 #pagebreak()
 
